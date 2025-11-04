@@ -5,6 +5,7 @@ import com.mera.apirest.dto.user.CreateUserResponse;
 import com.mera.apirest.models.Role;
 import com.mera.apirest.models.User;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class UserMapper {
         List<RoleDTO> roleDTOS = roles.stream()
                 .map(role -> new RoleDTO(role.getId(), role.getName(), role.getImage(), role.getRoute()))
                 .toList();
+
         CreateUserResponse response = new CreateUserResponse();
         response.setId(user.getId());
         response.setName(user.getName());
@@ -23,10 +25,12 @@ public class UserMapper {
         response.setEmail(user.getEmail());
         response.setRoles(roleDTOS);
 
-//        if (user.getImage() != null) {
-//            String imageUrl = APIConfig.BASE_URL + user.getImage();
-//            response.setImage(imageUrl);
-//        }
+        // Construir URL completa dinámicamente usando la petición actual
+        if (user.getImage() != null && !user.getImage().isEmpty()) {
+            String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+            response.setImage(baseUrl + user.getImage());
+        }
+
         return response;
     }
 
