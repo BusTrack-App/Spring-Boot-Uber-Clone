@@ -1,10 +1,12 @@
 package com.mera.apirest.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Data
 @Entity
 @Table(name = "roles")
 public class Role {
