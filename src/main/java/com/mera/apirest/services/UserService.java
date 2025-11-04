@@ -45,9 +45,9 @@ public class UserService {
     private UserMapper userMapper;
 
     @Transactional
-    public CreateUserResponse create(CreateUserRequest request) {
+    public LoginResponse create(CreateUserRequest request) {
         if (userRepository.existsByEmail(request.email)) {
-            throw new RuntimeException("El correo ya está registrado");
+            throw new RuntimeException("El correo ya esta registrado");
         }
 
         User user = new User();
@@ -55,35 +55,30 @@ public class UserService {
         user.setLastname(request.lastname);
         user.setPhone(request.phone);
         user.setEmail(request.email);
-
         String encryptedPassword = passwordEncoder.encode(request.password);
         user.setPassword(encryptedPassword);
 
         User savedUser = userRepository.save(user);
 
         Role clientRole = roleRepository.findById("CLIENT")
-                .orElseThrow(() -> new RuntimeException("El rol CLIENT no existe"));
+                .orElseThrow(() -> new RuntimeException("El rol de cliente no existe"));
 
         UserHasRoles userHasRoles = new UserHasRoles(savedUser, clientRole);
         userHasRolesRepository.save(userHasRoles);
 
-        CreateUserResponse createUserResponse = new CreateUserResponse();
-        createUserResponse.setId(savedUser.getId());
-        createUserResponse.setName(savedUser.getName());
-        createUserResponse.setLastname(savedUser.getLastname());
-        createUserResponse.setImage(savedUser.getImage());
-        createUserResponse.setPhone(savedUser.getPhone());
-        createUserResponse.setEmail(savedUser.getEmail());
-
+        // Obtener los roles del usuario (en este caso solo CLIENT)
         List<Role> roles = roleRepository.findAllByUserHasRoles_User_Id(savedUser.getId());
-        List<RoleDTO> roleDTOS = roles.stream()
-                .map(role -> new RoleDTO(role.getId(), role.getName(), role.getImage(), role.getRoute()))
-                .toList();
-        createUserResponse.setRoles(roleDTOS);
 
-        return createUserResponse;
+        // Generar token
+        String token = jwtUtil.generateToken(savedUser);
+
+        // Construir respuesta
+        LoginResponse response = new LoginResponse();
+        response.setToken("Bearer " + token);
+        response.setUser(userMapper.toUserResponse(savedUser, roles));
+
+        return response;
     }
-
 
     @Transactional
     public LoginResponse login(LoginRequest request) {
@@ -113,69 +108,39 @@ public class UserService {
         return userMapper.toUserResponse(user, roles);
     }
 
+
     @Transactional
     public CreateUserResponse updateUserWithImage(Long id, UpdateUserRequest request) throws IOException {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException("El Email o Password no son validos"));
 
-        // Actualizar campos básicos
-        if (request.getName() != null && !request.getName().trim().isEmpty()) {
+        if (request.getName() != null) {
             user.setName(request.getName());
         }
 
-        if (request.getLastname() != null && !request.getLastname().trim().isEmpty()) {
+        if (request.getLastname() != null) {
             user.setLastname(request.getLastname());
         }
 
-        if (request.getPhone() != null && !request.getPhone().trim().isEmpty()) {
+        if (request.getPhone() != null) {
             user.setPhone(request.getPhone());
         }
 
-        // Procesar imagen si existe
         if (request.getFile() != null && !request.getFile().isEmpty()) {
-            try {
-                // Crear directorio si no existe
-                String uploadDir = "uploads/users/" + user.getId();
-                Path uploadPath = Paths.get(uploadDir);
+            String uploadDir = "uploads/users/" + user.getId();
+            String filename = request.getFile().getOriginalFilename();
+            String filePath = Paths.get(uploadDir, filename).toString();
 
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
-                }
-
-                // Obtener extensión del archivo
-                String originalFilename = request.getFile().getOriginalFilename();
-                String fileExtension = "";
-                if (originalFilename != null && originalFilename.contains(".")) {
-                    fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-                }
-
-                // Generar nombre único para evitar conflictos
-                String uniqueFilename = UUID.randomUUID().toString() + fileExtension;
-                Path filePath = uploadPath.resolve(uniqueFilename);
-
-                // Copiar archivo
-                Files.copy(request.getFile().getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-                // Guardar ruta en formato web (con barras normales)
-                String webPath = "/uploads/users/" + user.getId() + "/" + uniqueFilename;
-                user.setImage(webPath);
-
-                System.out.println("Imagen guardada exitosamente en: " + filePath.toAbsolutePath());
-                System.out.println("Ruta web guardada: " + webPath);
-
-            } catch (IOException e) {
-                System.err.println("Error al guardar la imagen: " + e.getMessage());
-                e.printStackTrace();
-                throw new IOException("Error al procesar la imagen: " + e.getMessage());
-            }
+            Files.createDirectories(Paths.get(uploadDir));
+            Files.copy(request.getFile().getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+            user.setImage("/" + filePath.replace("\\", "/"));
         }
 
-        // Guardar usuario con los cambios
-        User savedUser = userRepository.save(user);
+        userRepository.save(user);
 
-        // Obtener roles y devolver respuesta
-        List<Role> roles = roleRepository.findAllByUserHasRoles_User_Id(savedUser.getId());
+        List<Role> roles = roleRepository.findAllByUserHasRoles_User_Id(user.getId());
 
-        return userMapper.toUserResponse(savedUser, roles);
+        return userMapper.toUserResponse(user, roles);
     }
+
 }

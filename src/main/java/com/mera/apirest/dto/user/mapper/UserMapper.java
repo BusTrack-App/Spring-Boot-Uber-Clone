@@ -1,5 +1,6 @@
 package com.mera.apirest.dto.user.mapper;
 
+import com.mera.apirest.config.APIConfig;
 import com.mera.apirest.dto.role.RoleDTO;
 import com.mera.apirest.dto.user.CreateUserResponse;
 import com.mera.apirest.models.Role;
@@ -16,7 +17,6 @@ public class UserMapper {
         List<RoleDTO> roleDTOS = roles.stream()
                 .map(role -> new RoleDTO(role.getId(), role.getName(), role.getImage(), role.getRoute()))
                 .toList();
-
         CreateUserResponse response = new CreateUserResponse();
         response.setId(user.getId());
         response.setName(user.getName());
@@ -25,12 +25,10 @@ public class UserMapper {
         response.setEmail(user.getEmail());
         response.setRoles(roleDTOS);
 
-        // Construir URL completa dinámicamente usando la petición actual
-        if (user.getImage() != null && !user.getImage().isEmpty()) {
-            String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-            response.setImage(baseUrl + user.getImage());
+        if (user.getImage() != null) {
+            String imageUrl = APIConfig.BASE_URL + user.getImage();
+            response.setImage(imageUrl);
         }
-
         return response;
     }
 

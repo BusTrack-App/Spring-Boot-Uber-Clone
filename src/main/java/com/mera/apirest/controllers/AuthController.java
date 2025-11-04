@@ -27,7 +27,7 @@ public class AuthController {
     @PostMapping(value = "/register")
     public ResponseEntity<?> create(@RequestBody CreateUserRequest request) {
         try {
-            CreateUserResponse user = userService.create(request);
+            LoginResponse user = userService.create(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(user);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
