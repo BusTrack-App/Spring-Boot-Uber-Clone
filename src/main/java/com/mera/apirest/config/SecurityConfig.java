@@ -1,5 +1,6 @@
 package com.mera.apirest.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,7 +13,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtFilter;
+//    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+//    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -24,15 +30,16 @@ public class SecurityConfig {
                                 "/uploads/**"
                         ).permitAll()
                         .anyRequest().authenticated()
-                );
-//                .exceptionHandling(ex -> ex
-//                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-//                        .accessDeniedHandler(customAccessDeniedHandler)
-//                )
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
 
     }
 
 }
+
+//                .exceptionHandling(ex -> ex
+//                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+//                        .accessDeniedHandler(customAccessDeniedHandler)
+//                )

@@ -99,4 +99,14 @@ public class UserService {
 
         return response;
     }
+
+    @Transactional
+    public CreateUserResponse findById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("El Email o Password no son validos"));
+
+        List<Role> roles = roleRepository.findAllByUserHasRoles_User_Id(user.getId());
+
+        return userMapper.toUserResponse(user, roles);
+    }
 }
