@@ -1,6 +1,7 @@
 package com.mera.apirest.controllers;
 
 import com.mera.apirest.dto.user.CreateUserRequest;
+import com.mera.apirest.dto.user.CreateUserResponse;
 import com.mera.apirest.models.User;
 import com.mera.apirest.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class AuthController {
     @PostMapping(value = "/register")
     public ResponseEntity<?> create(@RequestBody CreateUserRequest request) {
         try {
-            User user = userService.create(request);
+            CreateUserResponse user = userService.create(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(user);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(

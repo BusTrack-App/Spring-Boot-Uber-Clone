@@ -1,6 +1,7 @@
 package com.mera.apirest.controllers;
 
 import com.mera.apirest.dto.user.CreateUserRequest;
+import com.mera.apirest.dto.user.CreateUserResponse;
 import com.mera.apirest.models.User;
 import com.mera.apirest.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> create(@RequestBody CreateUserRequest request) {
-        User user = userService.create(request);
+    public ResponseEntity<CreateUserResponse> create(@RequestBody CreateUserRequest request) {
+        CreateUserResponse user = userService.create(request);
         return ResponseEntity.ok(user);
     }
 

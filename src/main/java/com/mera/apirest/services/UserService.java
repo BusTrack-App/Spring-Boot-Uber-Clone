@@ -1,6 +1,8 @@
 package com.mera.apirest.services;
 
+import com.mera.apirest.dto.role.RoleDTO;
 import com.mera.apirest.dto.user.CreateUserRequest;
+import com.mera.apirest.dto.user.CreateUserResponse;
 import com.mera.apirest.models.Role;
 import com.mera.apirest.models.User;
 import com.mera.apirest.models.UserHasRoles;
@@ -11,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class UserService {
@@ -28,7 +32,7 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     @Transactional
-    public User create(CreateUserRequest request) {
+    public CreateUserResponse create(CreateUserRequest request) {
         if (userRepository.existsByEmail(request.email)) {
             throw new RuntimeException("El correo ya está registrado");
         }
@@ -50,6 +54,20 @@ public class UserService {
         UserHasRoles userHasRoles = new UserHasRoles(savedUser, clientRole);
         userHasRolesRepository.save(userHasRoles);
 
-        return savedUser;
+        CreateUserResponse createUserResponse = new CreateUserResponse();
+        createUserResponse.setId(savedUser.getId());
+        createUserResponse.setName(savedUser.getName());
+        createUserResponse.setLastname(savedUser.getLastname());
+        createUserResponse.setImage(savedUser.getImage());
+        createUserResponse.setPhone(savedUser.getPhone());
+        createUserResponse.setEmail(savedUser.getEmail());
+
+        List<Role> roles = roleRepository.findAllByUserHasRoles_User_Id(savedUser.getId());
+        List<RoleDTO> roleDTOS = roles.stream()
+                .map(role -> new RoleDTO(role.getId(), role.getName(), role.getImage(), role.getRoute()))
+                .toList();
+        createUserResponse.setRoles(roleDTOS);
+
+        return createUserResponse;
     }
 }

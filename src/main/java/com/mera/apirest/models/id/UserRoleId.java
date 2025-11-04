@@ -11,8 +11,8 @@ import java.util.Objects;
 
 @Data
 @Embeddable
-//@NoArgsConstructor
-//@AllArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserRoleId implements Serializable {
 
     @Column(name = "id_user")
@@ -33,13 +33,6 @@ public class UserRoleId implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(userId, roleId);
-    }
-
-    public UserRoleId() {}
-
-    public UserRoleId(Long userId, String roleId){
-        this.userId = userId;
-        this.roleId = roleId;
     }
 }
 
