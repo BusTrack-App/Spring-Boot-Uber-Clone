@@ -1,9 +1,11 @@
 package com.mera.apirest.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Table(name = "users")
 public class User {
@@ -39,7 +41,7 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    
+
     public User() {
     }
 
