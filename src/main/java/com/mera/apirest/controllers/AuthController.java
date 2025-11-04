@@ -2,6 +2,8 @@ package com.mera.apirest.controllers;
 
 import com.mera.apirest.dto.user.CreateUserRequest;
 import com.mera.apirest.dto.user.CreateUserResponse;
+import com.mera.apirest.dto.user.LoginRequest;
+import com.mera.apirest.dto.user.LoginResponse;
 import com.mera.apirest.models.User;
 import com.mera.apirest.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,17 +37,17 @@ public class AuthController {
         }
     }
 
-//    @PostMapping(value = "/login")
-//    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-//        try {
-//            User response = userService.login(request);
-//            return ResponseEntity.ok(response);
-//        } catch (RuntimeException e) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
-//                    "message", e.getMessage(),
-//                    "statusCode", HttpStatus.UNAUTHORIZED.value()
-//            ));
-//        }
-//    }
+    @PostMapping(value = "/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        try {
+            LoginResponse response = userService.login(request);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+                    "message", e.getMessage(),
+                    "statusCode", HttpStatus.UNAUTHORIZED.value()
+            ));
+        }
+    }
 
 }

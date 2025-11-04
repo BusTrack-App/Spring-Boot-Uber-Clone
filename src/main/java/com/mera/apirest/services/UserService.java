@@ -3,12 +3,16 @@ package com.mera.apirest.services;
 import com.mera.apirest.dto.role.RoleDTO;
 import com.mera.apirest.dto.user.CreateUserRequest;
 import com.mera.apirest.dto.user.CreateUserResponse;
+import com.mera.apirest.dto.user.LoginRequest;
+import com.mera.apirest.dto.user.LoginResponse;
+import com.mera.apirest.dto.user.mapper.UserMapper;
 import com.mera.apirest.models.Role;
 import com.mera.apirest.models.User;
 import com.mera.apirest.models.UserHasRoles;
 import com.mera.apirest.repositories.RoleRepository;
 import com.mera.apirest.repositories.UserHasRolesRepository;
 import com.mera.apirest.repositories.UserRepository;
+import com.mera.apirest.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,6 +34,12 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Transactional
     public CreateUserResponse create(CreateUserRequest request) {
@@ -69,5 +79,24 @@ public class UserService {
         createUserResponse.setRoles(roleDTOS);
 
         return createUserResponse;
+    }
+
+
+    @Transactional
+    public LoginResponse login(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("El Email o Password no son validos"));
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("El Email o Password no son validos");
+        }
+
+        String token = jwtUtil.generateToken(user);
+        List<Role> roles = roleRepository.findAllByUserHasRoles_User_Id(user.getId());
+
+        LoginResponse response = new LoginResponse();
+        response.setToken("Bearer " + token);
+        response.setUser(userMapper.toUserResponse(user, roles));
+
+        return response;
     }
 }
