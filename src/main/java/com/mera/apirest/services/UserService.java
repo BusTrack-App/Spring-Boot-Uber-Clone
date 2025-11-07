@@ -1,6 +1,5 @@
 package com.mera.apirest.services;
 
-import com.mera.apirest.dto.role.RoleDTO;
 import com.mera.apirest.dto.user.*;
 import com.mera.apirest.dto.user.mapper.UserMapper;
 import com.mera.apirest.models.Role;
@@ -17,11 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class UserService {
