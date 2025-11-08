@@ -59,6 +59,18 @@ public class DriverPositionController {
         }
     }
 
+    @DeleteMapping(value = "/{idDriver}")
+    public ResponseEntity<?> delete(@PathVariable long idDriver) {
+        try {
+            driverPositionService.delete(idDriver);
+            return ResponseEntity.ok(true);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                    "message", e.getMessage(),
+                    "statusCode", HttpStatus.NOT_FOUND.value()
+            ));
+        }
+    }
 
 
 }

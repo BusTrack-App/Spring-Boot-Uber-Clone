@@ -97,5 +97,13 @@ public class DriverPositionService {
 
         return response;
     }
+
+    @Transactional
+    public void delete(Long idDriver) {
+        DriverPosition driverPosition = driverPositionRepository.findById(idDriver).orElseThrow(
+                () -> new RuntimeException("La posicion del conductor no existe")
+        );
+        driverPositionRepository.delete(driverPosition);
+    }
 }
 
