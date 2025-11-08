@@ -22,8 +22,21 @@ public class DriverPositionController {
     @PostMapping()
     public ResponseEntity<?> create(@RequestBody DriverPositionRequest request) {
         try {
-            DriverPosition response = driverPositionService.create(request);
+            DriverPositionResponse response = driverPositionService.create(request);
             return ResponseEntity.ok(true);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                    "message", e.getMessage(),
+                    "statusCode", HttpStatus.NOT_FOUND.value()
+            ));
+        }
+    }
+
+    @GetMapping(value = "/{idDriver}")
+    public ResponseEntity<?> getDriverPosition(@PathVariable Long idDriver) {
+        try {
+            DriverPositionResponse response = driverPositionService.getDriverPosition(idDriver);
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
                     "message", e.getMessage(),
