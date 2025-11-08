@@ -2,6 +2,9 @@ package com.mera.apirest.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.mera.apirest.dto.client_request.DistanceMatrixResponse;
+import com.mera.apirest.models.TimeAndDistanceValues;
+import com.mera.apirest.repositories.TimeAndDistanceValuesRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,11 +19,14 @@ public class ClientRequestService {
     @Value("${google.api.key}")
     private String googleApiKey;
 
+    @Autowired
+    private TimeAndDistanceValuesRepository timeAndDistanceValuesRepository;
+
     public DistanceMatrixResponse getTimeAndDistance(double originLat, double originLng, double destinationLat, double destinationLng) {
 
-//        TimeAndDistanceValues values = timeAndDistanceValuesRepository.findById(1L).orElseThrow(
-//                () -> new RuntimeException("Los precios no han sido establecidos")
-//        );
+        TimeAndDistanceValues values = timeAndDistanceValuesRepository.findById(1L).orElseThrow(
+                () -> new RuntimeException("Los precios no han sido establecidos")
+        );
 
         String origins = originLat + "," + originLng;
         String destinations = destinationLat + "," + destinationLng;
@@ -54,7 +60,7 @@ public class ClientRequestService {
 
         double km = distanceValue / 1000;
         double minutes = durationValue / 60;
-//        double recommededValue = values.getKmValue() * km + values.getMinValue() * minutes;
+        double recommededValue = values.getKmValue() * km + values.getMinValue() * minutes;
 
         DistanceMatrixResponse responseDTO = new DistanceMatrixResponse();
         responseDTO.setOriginAddresses(body.get("origin_addresses").get(0).asText());
@@ -70,7 +76,7 @@ public class ClientRequestService {
 
         responseDTO.setDistance(distance);
         responseDTO.setDuration(duration);
-//        responseDTO.setRecommendedValue(String.format("%.2f", recommededValue) );
+        responseDTO.setRecommendedValue(String.format("%.2f", recommededValue) );
 
         return responseDTO;
     }

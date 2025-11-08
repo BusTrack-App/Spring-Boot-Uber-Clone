@@ -10,14 +10,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DistanceMatrixResponse {
 
-//    @JsonProperty("recommended_value")
-//    private String recommendedValue;
+    @JsonProperty("recommended_value")
+    private String recommendedValue;
+
+    @JsonProperty("origin_addresses")
+    private String originAddresses;
 
     @JsonProperty("destination_addresses")
     private String destinationAddresses;
 
-    @JsonProperty("origin_addresses")
-    private String originAddresses;
+
     private Distance distance;
     private Duration duration;
 
