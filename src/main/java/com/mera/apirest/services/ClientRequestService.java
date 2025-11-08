@@ -3,6 +3,7 @@ package com.mera.apirest.services;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.mera.apirest.dto.client_request.ClientRequestDTO;
 import com.mera.apirest.dto.client_request.DistanceMatrixResponse;
+import com.mera.apirest.dto.client_request.NearbyClientRequestResponse;
 import com.mera.apirest.models.TimeAndDistanceValues;
 import com.mera.apirest.repositories.ClientRequestRepository;
 import com.mera.apirest.repositories.TimeAndDistanceValuesRepository;
@@ -14,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @Service
 public class ClientRequestService {
@@ -101,5 +103,7 @@ public class ClientRequestService {
         return responseDTO;
     }
 
-
+    public List<NearbyClientRequestResponse> findNearbyClientRequest(double driverLat, double driverLng) {
+        return clientRequestRepository.findNearbyClientRequest(driverLat, driverLng);
+    }
 }

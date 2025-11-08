@@ -2,12 +2,14 @@ package com.mera.apirest.controllers;
 
 import com.mera.apirest.dto.client_request.ClientRequestDTO;
 import com.mera.apirest.dto.client_request.DistanceMatrixResponse;
+import com.mera.apirest.dto.client_request.NearbyClientRequestResponse;
 import com.mera.apirest.services.ClientRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -17,6 +19,18 @@ public class ClientRequestController {
     @Autowired
     private ClientRequestService clientRequestService;
 
+    @PostMapping()
+    public ResponseEntity<?> create(@RequestBody ClientRequestDTO request) {
+        try {
+            Long id = clientRequestService.create(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(id);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "message", e.getMessage(),
+                    "statusCode", HttpStatus.BAD_REQUEST.value()
+            ));
+        }
+    }
 
     @GetMapping(value = "/{originLat}/{originLng}/{destinationLat}/{destinationLng}")
     public ResponseEntity<?> getTimeAndDistance(
@@ -41,11 +55,11 @@ public class ClientRequestController {
         }
     }
 
-    @PostMapping()
-    public ResponseEntity<?> create(@RequestBody ClientRequestDTO request) {
+    @GetMapping(value = "/{driverLat}/{driverLng}")
+    public ResponseEntity<?> findNearbyClientRequest(@PathVariable double driverLat,  @PathVariable double driverLng) {
         try {
-            Long id = clientRequestService.create(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(id);
+            List<NearbyClientRequestResponse> response = clientRequestService.findNearbyClientRequest(driverLat, driverLng);
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
                     "message", e.getMessage(),

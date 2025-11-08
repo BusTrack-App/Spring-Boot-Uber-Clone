@@ -38,3 +38,10 @@ Ademas de pasar el ip4v del pc para poder conectarse desde un emulador
 
 
 Asegurarse de que la Api de google tenga habilitado Distance Matrix API 
+
+
+
+
+Al hacer peticiones al
+http://192.168.1.55:3000/client-requests/4.713484/-74.084330
+Se mouestran las ofertas de rutas actuales
