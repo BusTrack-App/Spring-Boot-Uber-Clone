@@ -2,6 +2,7 @@ package com.mera.apirest.controllers;
 
 import com.mera.apirest.dto.driver_position.DriverPositionRequest;
 import com.mera.apirest.dto.driver_position.DriverPositionResponse;
+import com.mera.apirest.dto.driver_position.NearbyDriverPositionResponse;
 import com.mera.apirest.models.DriverPosition;
 import com.mera.apirest.services.DriverPositionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,19 @@ public class DriverPositionController {
     public ResponseEntity<?> getDriverPosition(@PathVariable Long idDriver) {
         try {
             DriverPositionResponse response = driverPositionService.getDriverPosition(idDriver);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                    "message", e.getMessage(),
+                    "statusCode", HttpStatus.NOT_FOUND.value()
+            ));
+        }
+    }
+
+    @GetMapping(value = "/{lat}/{lng}")
+    public ResponseEntity<?> getNearbyDrivers(@PathVariable double lat, @PathVariable double lng) {
+        try {
+            List<NearbyDriverPositionResponse> response = driverPositionService.getNearbyDrivers(lat,lng);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(

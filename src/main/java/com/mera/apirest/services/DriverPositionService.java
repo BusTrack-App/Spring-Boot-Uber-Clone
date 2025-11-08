@@ -2,6 +2,7 @@ package com.mera.apirest.services;
 
 import com.mera.apirest.dto.driver_position.DriverPositionRequest;
 import com.mera.apirest.dto.driver_position.DriverPositionResponse;
+import com.mera.apirest.dto.driver_position.NearbyDriverPositionResponse;
 import com.mera.apirest.models.DriverPosition;
 import com.mera.apirest.models.User;
 import com.mera.apirest.repositories.DriverPositionRepository;
@@ -15,6 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -72,6 +74,28 @@ public class DriverPositionService {
         }
     }
 
+    @Transactional
+    public List<NearbyDriverPositionResponse> getNearbyDrivers(double lat, double lng) {
+        List<Object[]> results = driverPositionRepository.findNearbyDrivers(lat, lng);
+        List<NearbyDriverPositionResponse> response = new ArrayList<>();
 
+        for (Object[] row : results) {
+            Long id = ((Number) row[0]).longValue();
+            String positionText = (String) row[1];
+            Pattern pattern = Pattern.compile("POINT\\(([-\\d.]+) ([-\\d.]+)\\)");
+            Matcher matcher = pattern.matcher(positionText);
+            double distance = ((Number) row[2]).doubleValue();
+
+            if (matcher.find()) {
+                double x = Double.parseDouble(matcher.group(1));
+                double y = Double.parseDouble(matcher.group(2));
+
+                NearbyDriverPositionResponse.Position position = new NearbyDriverPositionResponse.Position(x, y);
+                response.add(new NearbyDriverPositionResponse(id, position, distance));
+            }
+        }
+
+        return response;
+    }
 }
 
