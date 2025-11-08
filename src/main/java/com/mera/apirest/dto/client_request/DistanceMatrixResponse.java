@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class DistanceMatrixResponse {
 
     @JsonProperty("recommended_value")
-    private String recommendedValue;
+    private double recommendedValue;
 
     @JsonProperty("origin_addresses")
     private String originAddresses;

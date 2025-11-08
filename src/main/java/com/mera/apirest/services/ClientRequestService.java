@@ -76,7 +76,8 @@ public class ClientRequestService {
 
         responseDTO.setDistance(distance);
         responseDTO.setDuration(duration);
-        responseDTO.setRecommendedValue(String.format("%.2f", recommededValue) );
+        responseDTO.setRecommendedValue(recommededValue );
+//        responseDTO.setRecommendedValue(String.format("%.2f", recommededValue) );
 
         return responseDTO;
     }
