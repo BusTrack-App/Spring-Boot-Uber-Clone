@@ -34,3 +34,7 @@ Como configuracion se deben incluir en el aplication.yml las credenciales para e
 trar a la base de datos MySQL, usuario, contraseña y nombre de la db
 
 Ademas de pasar el ip4v del pc para poder conectarse desde un emulador
+
+
+
+Asegurarse de que la Api de google tenga habilitado Distance Matrix API 

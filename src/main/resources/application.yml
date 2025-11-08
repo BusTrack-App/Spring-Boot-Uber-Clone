@@ -24,3 +24,8 @@ spring:
 socket:
   host: 0.0.0.0
   port: 9092
+
+
+google:
+  api:
+    key: AIzaSyCB_U6DeVUjo172-bcCrR1kt8_QcZ3A2-c
