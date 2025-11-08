@@ -34,6 +34,7 @@ public class SocketEventHandler {
             position.setId(data.getId());
             position.setLat(data.getLat());
             position.setLng(data.getLng());
+            System.out.println("Cambio de Posicion: " + position);
 
             server.getBroadcastOperations().sendEvent("new_driver_position", position);
         });
