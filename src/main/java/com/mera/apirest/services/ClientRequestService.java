@@ -1,8 +1,10 @@
 package com.mera.apirest.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.mera.apirest.dto.client_request.ClientRequestDTO;
 import com.mera.apirest.dto.client_request.DistanceMatrixResponse;
 import com.mera.apirest.models.TimeAndDistanceValues;
+import com.mera.apirest.repositories.ClientRequestRepository;
 import com.mera.apirest.repositories.TimeAndDistanceValuesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +23,23 @@ public class ClientRequestService {
 
     @Autowired
     private TimeAndDistanceValuesRepository timeAndDistanceValuesRepository;
+
+    @Autowired
+    private ClientRequestRepository clientRequestRepository;
+
+    public Long create(ClientRequestDTO clientRequest) {
+        return clientRequestRepository.insertClientRequest(
+                clientRequest.getIdClient(),
+                clientRequest.getFareOffered(),
+                clientRequest.getPickupLat(),
+                clientRequest.getPickupLng(),
+                clientRequest.getDestinationLat(),
+                clientRequest.getDestinationLng(),
+                clientRequest.getPickupDescription(),
+                clientRequest.getDestinationDescription()
+        );
+    }
+
 
     public DistanceMatrixResponse getTimeAndDistance(double originLat, double originLng, double destinationLat, double destinationLng) {
 

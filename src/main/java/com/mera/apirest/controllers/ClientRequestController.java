@@ -1,14 +1,12 @@
 package com.mera.apirest.controllers;
 
+import com.mera.apirest.dto.client_request.ClientRequestDTO;
 import com.mera.apirest.dto.client_request.DistanceMatrixResponse;
 import com.mera.apirest.services.ClientRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -18,6 +16,7 @@ public class ClientRequestController {
 
     @Autowired
     private ClientRequestService clientRequestService;
+
 
     @GetMapping(value = "/{originLat}/{originLng}/{destinationLat}/{destinationLng}")
     public ResponseEntity<?> getTimeAndDistance(
@@ -34,6 +33,19 @@ public class ClientRequestController {
                     destinationLng
             );
             return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "message", e.getMessage(),
+                    "statusCode", HttpStatus.BAD_REQUEST.value()
+            ));
+        }
+    }
+
+    @PostMapping()
+    public ResponseEntity<?> create(@RequestBody ClientRequestDTO request) {
+        try {
+            Long id = clientRequestService.create(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(id);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
                     "message", e.getMessage(),
