@@ -114,8 +114,7 @@ public class ClientRequestRepository {
                 	distance < 5000
         """;
 
-//        List<NearbyClientRequestResponse> data = jdbcTemplate.query(sql, new Object[]{driverLng, driverLat}, (result, rowNumber) -> {
-        return  jdbcTemplate.query(sql, new Object[]{driverLng, driverLat}, (result, rowNumber) -> {
+        List<NearbyClientRequestResponse> data = jdbcTemplate.query(sql, new Object[]{driverLng, driverLat}, (result, rowNumber) -> {
             ObjectMapper mapper = new ObjectMapper();
 
             try {
@@ -145,53 +144,53 @@ public class ClientRequestRepository {
 
 
         });
-//        if (!data.isEmpty()) {
-//            try {
-//                String origins = driverLat + "," + driverLng;
-//                String destinations = data.stream()
-//                        .map(d -> d.getPickupPosition().getY() + "," + d.getPickupPosition().getX())
-//                        .collect(Collectors.joining("|"));
-//
-//                URI uri = UriComponentsBuilder
-//                        .fromUriString("https://maps.googleapis.com/maps/api/distancematrix/json")
-//                        .queryParam("origins", origins)
-//                        .queryParam("destinations", destinations)
-//                        .queryParam("units", "metric")
-//                        .queryParam("mode", "driving")
-//                        .queryParam("key", googleApiKey)
-//                        .build()
-//                        .toUri();
-//                RestTemplate restTemplate = new RestTemplate();
-//                ResponseEntity<JsonNode> response = restTemplate.getForEntity(uri, JsonNode.class);
-//                JsonNode elements = response.getBody().get("rows").get(0).get("elements");
-//
-//                for (int i = 0; i < data.size(); i++) {
-//                    JsonNode element = elements.get(i);
-//                    NearbyClientRequestResponse.GoogleDistanceMatrixDTO googleDTO = new NearbyClientRequestResponse.GoogleDistanceMatrixDTO();
-//                    googleDTO.setStatus(element.get("status").asText());
-//
-//                    if (element.has("distance") && !element.get("distance").isNull()) {
-//                        googleDTO.setDistance(new NearbyClientRequestResponse.GoogleDistanceMatrixDTO.ValueText(
-//                                element.get("distance").get("text").asText(),
-//                                element.get("distance").get("value").asDouble()
-//                        ));
-//                    }
-//
-//                    if (element.has("duration") && !element.get("duration").isNull()) {
-//                        googleDTO.setDuration(new NearbyClientRequestResponse.GoogleDistanceMatrixDTO.ValueText(
-//                                element.get("duration").get("text").asText(),
-//                                element.get("duration").get("value").asDouble()
-//                        ));
-//                    }
-//
-//                    data.get(i).setGoogleDistanceMatrix(googleDTO);
-//                }
-//
-//            } catch (Exception e) {
-//                throw new RuntimeException("Error al obtener datos del API Google Distance Matrix");
-//            }
-//        }
-//        return data;
+        if (!data.isEmpty()) {
+            try {
+                String origins = driverLat + "," + driverLng;
+                String destinations = data.stream()
+                        .map(d -> d.getPickupPosition().getY() + "," + d.getPickupPosition().getX())
+                        .collect(Collectors.joining("|"));
+
+                URI uri = UriComponentsBuilder
+                        .fromUriString("https://maps.googleapis.com/maps/api/distancematrix/json")
+                        .queryParam("origins", origins)
+                        .queryParam("destinations", destinations)
+                        .queryParam("units", "metric")
+                        .queryParam("mode", "driving")
+                        .queryParam("key", googleApiKey)
+                        .build()
+                        .toUri();
+                RestTemplate restTemplate = new RestTemplate();
+                ResponseEntity<JsonNode> response = restTemplate.getForEntity(uri, JsonNode.class);
+                JsonNode elements = response.getBody().get("rows").get(0).get("elements");
+
+                for (int i = 0; i < data.size(); i++) {
+                    JsonNode element = elements.get(i);
+                    NearbyClientRequestResponse.GoogleDistanceMatrixDTO googleDTO = new NearbyClientRequestResponse.GoogleDistanceMatrixDTO();
+                    googleDTO.setStatus(element.get("status").asText());
+
+                    if (element.has("distance") && !element.get("distance").isNull()) {
+                        googleDTO.setDistance(new NearbyClientRequestResponse.GoogleDistanceMatrixDTO.ValueText(
+                                element.get("distance").get("text").asText(),
+                                element.get("distance").get("value").asDouble()
+                        ));
+                    }
+
+                    if (element.has("duration") && !element.get("duration").isNull()) {
+                        googleDTO.setDuration(new NearbyClientRequestResponse.GoogleDistanceMatrixDTO.ValueText(
+                                element.get("duration").get("text").asText(),
+                                element.get("duration").get("value").asDouble()
+                        ));
+                    }
+
+                    data.get(i).setGoogleDistanceMatrix(googleDTO);
+                }
+
+            } catch (Exception e) {
+                throw new RuntimeException("Error al obtener datos del API Google Distance Matrix");
+            }
+        }
+        return data;
     }
 
 
