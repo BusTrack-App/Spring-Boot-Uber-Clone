@@ -27,7 +27,7 @@ public class DriverTripOfferService {
     private DriverTripOfferRepository driverTripOfferRepository;
 
     @Transactional
-    public DriverTripOfferResponse create(DriverTripOfferRequest request) {
+    public CreateDriverTripOfferResponse create(DriverTripOfferRequest request) {
         User driver = userRepository.findById(request.getIdDriver()).orElseThrow(
                 () -> new RuntimeException("El conductor no existe")
         );
@@ -39,7 +39,7 @@ public class DriverTripOfferService {
         }
 
         Long id = driverTripOfferRepository.insertDriverTripOffer(request);
-        DriverTripOfferResponse response = new DriverTripOfferResponse();
+        CreateDriverTripOfferResponse response = new CreateDriverTripOfferResponse();
         response.setId(id);
         response.setIdDriver(request.getIdDriver());
         response.setIdClientRequest(request.getIdClientRequest());

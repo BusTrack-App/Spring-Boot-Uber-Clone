@@ -34,7 +34,7 @@ public class DriverTripOfferResponse {
     private LocalDateTime updatedAt;
 
     private DriverInfoDTO driver;
-    private CarInfoDTO car;
+//    private CarInfoDTO car;
 
     @Data
     @NoArgsConstructor
@@ -46,14 +46,14 @@ public class DriverTripOfferResponse {
         private String image;
     }
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class CarInfoDTO {
-        private String brand;
-        private String color;
-        private String plate;
-    }
+//    @Data
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    public static class CarInfoDTO {
+//        private String brand;
+//        private String color;
+//        private String plate;
+//    }
 
 }
 

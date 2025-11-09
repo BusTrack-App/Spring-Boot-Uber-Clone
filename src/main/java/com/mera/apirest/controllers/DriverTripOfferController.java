@@ -1,5 +1,6 @@
 package com.mera.apirest.controllers;
 
+import com.mera.apirest.dto.driver_position.DriverPositionResponse;
 import com.mera.apirest.dto.driver_trip_offer.CreateDriverTripOfferResponse;
 import com.mera.apirest.dto.driver_trip_offer.DriverTripOfferRequest;
 import com.mera.apirest.dto.driver_trip_offer.DriverTripOfferResponse;
@@ -22,7 +23,7 @@ public class DriverTripOfferController {
     @PostMapping()
     public ResponseEntity<?> create(@RequestBody DriverTripOfferRequest request) {
         try {
-            DriverTripOfferResponse response = driverTripOfferService.create(request);
+            CreateDriverTripOfferResponse response = driverTripOfferService.create(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
