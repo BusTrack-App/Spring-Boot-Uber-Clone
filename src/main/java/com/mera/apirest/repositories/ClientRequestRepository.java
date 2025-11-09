@@ -26,6 +26,12 @@ public class ClientRequestRepository {
     @Value("${google.api.key}")
     private String googleApiKey;
 
+    public boolean findById(Long id) {
+        String sql = "SELECT COUNT(*) FROM client_requests WHERE id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
+    }
+
     // Crea una solicitud de viaje
     public Long insertClientRequest(
             Long idClient,
