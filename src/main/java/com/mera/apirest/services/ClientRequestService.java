@@ -1,6 +1,7 @@
 package com.mera.apirest.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.mera.apirest.dto.client_request.AssignDriverRequestDTO;
 import com.mera.apirest.dto.client_request.ClientRequestDTO;
 import com.mera.apirest.dto.client_request.DistanceMatrixResponse;
 import com.mera.apirest.dto.client_request.NearbyClientRequestResponse;
@@ -105,5 +106,10 @@ public class ClientRequestService {
 
     public List<NearbyClientRequestResponse> findNearbyClientRequest(double driverLat, double driverLng) {
         return clientRequestRepository.findNearbyClientRequest(driverLat, driverLng);
+    }
+
+
+    public boolean updateDriverAssigned(AssignDriverRequestDTO request) {
+        return clientRequestRepository.updateDriverAssigned(request);
     }
 }

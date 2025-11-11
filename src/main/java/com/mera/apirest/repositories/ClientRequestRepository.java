@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mera.apirest.config.APIConfig;
+import com.mera.apirest.dto.client_request.AssignDriverRequestDTO;
 import com.mera.apirest.dto.client_request.NearbyClientRequestResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -117,7 +118,7 @@ public class ClientRequestRepository {
                 WHERE
                 	timestampdiff(MINUTE, CR.updated_at, NOW()) < 1000 AND status = "CREATED"
                 HAVING
-                	distance < 5000
+                	distance < 20000
         """;
 
         List<NearbyClientRequestResponse> data = jdbcTemplate.query(sql, new Object[]{driverLng, driverLat}, (result, rowNumber) -> {
@@ -200,5 +201,21 @@ public class ClientRequestRepository {
     }
 
 
+    public boolean updateDriverAssigned(AssignDriverRequestDTO request) {
+        String sql = """
+            UPDATE
+                client_requests
+            SET
+                id_driver_assigned = ?,
+                status = 'ACCEPTED',
+                updated_at = NOW(),
+                fare_assigned = ?
+            WHERE
+                id = ?
+        """;
+
+        int rowsAffected = jdbcTemplate.update(sql, request.getIdDriverAssigned(), request.getFareAssigned(), request.getId());
+        return rowsAffected > 0;
+    }
 
 }

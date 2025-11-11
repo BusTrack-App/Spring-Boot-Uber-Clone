@@ -1,5 +1,6 @@
 package com.mera.apirest.controllers;
 
+import com.mera.apirest.dto.client_request.AssignDriverRequestDTO;
 import com.mera.apirest.dto.client_request.ClientRequestDTO;
 import com.mera.apirest.dto.client_request.DistanceMatrixResponse;
 import com.mera.apirest.dto.client_request.NearbyClientRequestResponse;
@@ -59,6 +60,20 @@ public class ClientRequestController {
     public ResponseEntity<?> findNearbyClientRequest(@PathVariable double driverLat,  @PathVariable double driverLng) {
         try {
             List<NearbyClientRequestResponse> response = clientRequestService.findNearbyClientRequest(driverLat, driverLng);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "message", e.getMessage(),
+                    "statusCode", HttpStatus.BAD_REQUEST.value()
+            ));
+        }
+    }
+
+
+    @PutMapping(value = "/updateDriverAssigned")
+    public ResponseEntity<?> updateDriverAssigned(@RequestBody AssignDriverRequestDTO request) {
+        try {
+            boolean response = clientRequestService.updateDriverAssigned(request);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
