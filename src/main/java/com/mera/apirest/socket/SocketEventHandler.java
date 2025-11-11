@@ -89,5 +89,27 @@ public class SocketEventHandler {
 
             server.getBroadcastOperations().sendEvent(eventName, response);
         });
+
+
+
+
+        server.addEventListener("new_driver_assigned", NewDriverAssignedDTO.class, (client, data, ackSender) -> {
+
+            NewDriverAssignedDTO newDriverAssignedDTO = new NewDriverAssignedDTO();
+            newDriverAssignedDTO.setIdClientRequest(data.getIdClientRequest());
+            newDriverAssignedDTO.setIdSocket(client.getSessionId().toString());
+
+            client.sendEvent("driver_assigned/" + data.getIdDriver(), newDriverAssignedDTO);
+        });
+
+        server.addEventListener("trip_change_driver_position", TripChangeDriverPositionDTO.class, (client, data, ackSender) -> {
+
+            TripChangeDriverPositionDTO dto = new TripChangeDriverPositionDTO();
+            dto.setLat(data.getLat());
+            dto.setLng(data.getLng());
+            dto.setIdSocket(client.getSessionId().toString());
+
+            client.sendEvent("trip_new_driver_position/" + data.getIdClient(), dto);
+        });
     }
 }
