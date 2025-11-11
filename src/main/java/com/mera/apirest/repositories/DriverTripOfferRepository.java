@@ -12,13 +12,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class DriverTripOfferRepository {
+public class DriverTripOfferRepository  {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private ObjectMapper objectMapper; // Inyectado para reutilizar
 
     public Long insertDriverTripOffer(DriverTripOfferRequest request) {
         String sql = """
@@ -31,7 +28,7 @@ public class DriverTripOfferRepository {
                 created_at,
                 updated_at
             ) VALUES (?, ?, ?, ?, ?, NOW(), NOW())
-            """;
+        """;
 
         jdbcTemplate.update(sql,
                 request.getIdDriver(),
@@ -45,55 +42,66 @@ public class DriverTripOfferRepository {
 
     public List<DriverTripOfferResponse> findByClientRequest(Long idClientRequest) {
         String sql = """
-        SELECT
-            DTO.id,
-            DTO.id_driver,
-            DTO.id_client_request,
-            DTO.fare_offered,
-            DTO.time,
-            DTO.distance,
-            DTO.created_at,
-            DTO.updated_at,
-            JSON_OBJECT(
-                'name', U.name,
-                'lastname', U.lastname,
-                'phone', U.phone,
-                'image', U.image
-            ) AS driver
-        FROM
-            driver_trip_offers AS DTO
-        INNER JOIN
-            users AS U ON U.id = DTO.id_driver
-        WHERE
-            DTO.id_client_request = ?
+            SELECT
+                DTO.id,
+                DTO.id_driver,
+                DTO.id_client_request,
+                DTO.fare_offered,
+                DTO.time,
+                DTO.distance,
+                DTO.created_at,
+                DTO.updated_at,
+                JSON_OBJECT(
+                    "name", U.name,
+                    "lastname", U.lastname,
+                    "phone", U.phone,
+                    "image", U.image
+                ) AS driver,
+                JSON_OBJECT(
+                    "brand", DCI.brand,
+                    "color", DCI.color,
+                    "plate", DCI.plate
+                ) AS car
+            FROM
+                driver_trip_offers AS DTO
+            INNER JOIN
+                users AS U
+            ON
+                U.id = DTO.id_driver
+            LEFT JOIN
+                driver_car_info AS DCI
+            ON
+                DCI.id_driver = U.id
+            WHERE
+                DTO.id_client_request = ?
         """;
-
-        return jdbcTemplate.query(sql, new Object[]{idClientRequest}, (rs, rowNum) -> {
-            DriverTripOfferResponse response = new DriverTripOfferResponse();
-
-            response.setId(rs.getLong("id"));
-            response.setIdDriver(rs.getLong("id_driver"));
-            response.setIdClientRequest(rs.getLong("id_client_request"));
-            response.setFareOffered(rs.getDouble("fare_offered"));
-            response.setTime(rs.getDouble("time"));
-            response.setDistance(rs.getDouble("distance"));
-            response.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-            response.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
-
-            String driverJson = rs.getString("driver");
+        return jdbcTemplate.query(sql, new Object[] {idClientRequest}, (result, rowNumber) -> {
+            ObjectMapper mapper = new ObjectMapper();
             try {
-                DriverTripOfferResponse.DriverInfoDTO driverInfo =
-                        objectMapper.readValue(driverJson, DriverTripOfferResponse.DriverInfoDTO.class);
-
+                DriverTripOfferResponse.DriverInfoDTO driverInfo = mapper.readValue(result.getString("driver"), DriverTripOfferResponse.DriverInfoDTO.class);
                 if (driverInfo.getImage() != null) {
                     driverInfo.setImage(APIConfig.BASE_URL + driverInfo.getImage());
                 }
-                response.setDriver(driverInfo);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException("Error deserializando información del conductor", e);
-            }
 
-            return response;
+                DriverTripOfferResponse.CarInfoDTO carInfo = mapper.readValue(result.getString("car"), DriverTripOfferResponse.CarInfoDTO.class);
+
+                DriverTripOfferResponse response = new DriverTripOfferResponse();
+                response.setId(result.getLong("id"));
+                response.setIdClientRequest(result.getLong("id_client_request"));
+                response.setIdDriver(result.getLong("id_driver"));
+                response.setFareOffered(result.getDouble("fare_offered"));
+                response.setTime(result.getDouble("time"));
+                response.setDistance(result.getDouble("distance"));
+                response.setDriver(driverInfo);
+                response.setCreatedAt(result.getTimestamp("created_at").toLocalDateTime());
+                response.setUpdatedAt(result.getTimestamp("updated_at").toLocalDateTime());
+                response.setCar(carInfo);
+
+                return response;
+            }catch (JsonProcessingException e) {
+                throw new RuntimeException("Error deserializando informacion", e);
+            }
         });
     }
+
 }
