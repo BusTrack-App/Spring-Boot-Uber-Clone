@@ -113,4 +113,10 @@ public class ClientRequestService {
     public boolean updateDriverAssigned(AssignDriverRequestDTO request) {
         return clientRequestRepository.updateDriverAssigned(request);
     }
+
+    public boolean updateStatus(UpdateStatusClientRequestDTO request) {
+        return clientRequestRepository.updateStatus(request);
+    }
+
+
 }

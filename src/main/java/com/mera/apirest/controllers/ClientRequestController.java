@@ -93,4 +93,19 @@ public class ClientRequestController {
         }
     }
 
+
+    @PutMapping(value = "/update_status")
+    public ResponseEntity<?> updateStatus(@RequestBody UpdateStatusClientRequestDTO request) {
+        try {
+            boolean response = clientRequestService.updateStatus(request);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "message", e.getMessage(),
+                    "statusCode", HttpStatus.BAD_REQUEST.value()
+            ));
+        }
+    }
+
+
 }

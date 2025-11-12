@@ -7,6 +7,7 @@ import com.mera.apirest.config.APIConfig;
 import com.mera.apirest.dto.client_request.AssignDriverRequestDTO;
 import com.mera.apirest.dto.client_request.ClientRequestResponse;
 import com.mera.apirest.dto.client_request.NearbyClientRequestResponse;
+import com.mera.apirest.dto.client_request.UpdateStatusClientRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -316,7 +317,20 @@ public class ClientRequestRepository {
         return rowsAffected > 0;
     }
 
+    public boolean updateStatus(UpdateStatusClientRequestDTO request) {
+        String sql = """
+            UPDATE
+                client_requests
+            SET
+                status = ?,
+                updated_at = NOW()
+            WHERE
+                id = ?
+        """;
 
+        int rowsAffected = jdbcTemplate.update(sql, request.getStatus(), request.getId());
+        return rowsAffected > 0;
+    }
 
 
 
