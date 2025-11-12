@@ -111,5 +111,16 @@ public class SocketEventHandler {
 
             server.getBroadcastOperations().sendEvent("trip_new_driver_position/" + data.getIdClient(), dto);
         });
+
+
+        server.addEventListener("update_status_trip", UpdateStatusTripDTO.class, (client, data, ackSender) -> {
+
+            UpdateStatusTripDTO dto = new UpdateStatusTripDTO();
+            dto.setIdClientRequest(data.getIdClientRequest());
+            dto.setStatus(data.getStatus());
+            dto.setIdSocket(client.getSessionId().toString());
+
+            client.sendEvent("new_status_trip/" + data.getIdClientRequest(), dto);
+        });
     }
 }
