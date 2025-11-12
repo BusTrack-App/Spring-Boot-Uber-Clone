@@ -115,12 +115,29 @@ public class SocketEventHandler {
 
         server.addEventListener("update_status_trip", UpdateStatusTripDTO.class, (client, data, ackSender) -> {
 
+            // ✅ Log cuando se recibe el evento
+            System.out.println("========================================");
+            System.out.println("📩 Evento 'update_status_trip' recibido");
+            System.out.println("Cliente Socket ID: " + client.getSessionId().toString());
+            System.out.println("ID Client Request: " + data.getIdClientRequest());
+            System.out.println("Status: " + data.getStatus());
+            System.out.println("========================================");
+
             UpdateStatusTripDTO dto = new UpdateStatusTripDTO();
             dto.setIdClientRequest(data.getIdClientRequest());
             dto.setStatus(data.getStatus());
             dto.setIdSocket(client.getSessionId().toString());
 
-            client.sendEvent("new_status_trip/" + data.getIdClientRequest(), dto);
+            // ✅ Log antes de emitir el evento
+            String eventName = "new_status_trip/" + data.getIdClientRequest();
+            System.out.println("📤 Emitiendo evento: " + eventName);
+            System.out.println("Datos a enviar: " + dto.toString()); // Asegúrate de tener toString() en el DTO
+
+            server.getBroadcastOperations().sendEvent(eventName, dto);
+
+            // ✅ Log después de emitir
+            System.out.println("✅ Evento emitido exitosamente");
+            System.out.println("========================================\n");
         });
     }
 }
