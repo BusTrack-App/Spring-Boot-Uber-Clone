@@ -99,7 +99,7 @@ public class SocketEventHandler {
             newDriverAssignedDTO.setIdClientRequest(data.getIdClientRequest());
             newDriverAssignedDTO.setIdSocket(client.getSessionId().toString());
 
-            client.sendEvent("driver_assigned/" + data.getIdDriver(), newDriverAssignedDTO);
+            server.getBroadcastOperations().sendEvent("driver_assigned/" + data.getIdDriver(), newDriverAssignedDTO);
         });
 
         server.addEventListener("trip_change_driver_position", TripChangeDriverPositionDTO.class, (client, data, ackSender) -> {
@@ -109,7 +109,7 @@ public class SocketEventHandler {
             dto.setLng(data.getLng());
             dto.setIdSocket(client.getSessionId().toString());
 
-            client.sendEvent("trip_new_driver_position/" + data.getIdClient(), dto);
+            server.getBroadcastOperations().sendEvent("trip_new_driver_position/" + data.getIdClient(), dto);
         });
     }
 }
