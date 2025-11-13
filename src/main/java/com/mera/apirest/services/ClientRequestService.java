@@ -113,6 +113,10 @@ public class ClientRequestService {
         return clientRequestRepository.getByClientAssigned(idClient);
     }
 
+    public List<ClientRequestResponse> getByDriverAssigned(Long idDriverAssigned) {
+        return clientRequestRepository.getByDriverAssigned(idDriverAssigned);
+    }
+
     public boolean updateDriverAssigned(AssignDriverRequestDTO request) {
         return clientRequestRepository.updateDriverAssigned(request);
     }

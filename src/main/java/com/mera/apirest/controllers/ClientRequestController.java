@@ -92,6 +92,18 @@ public class ClientRequestController {
         }
     }
 
+    @GetMapping(value = "/driver/assigned/{idDriverAssigned}")
+    public ResponseEntity<?> getByDriverAssigned(@PathVariable Long idDriverAssigned) {
+        try {
+            List<ClientRequestResponse> response = clientRequestService.getByDriverAssigned(idDriverAssigned);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "message", e.getMessage(),
+                    "statusCode", HttpStatus.BAD_REQUEST.value()
+            ));
+        }
+    }
 
 
     @PutMapping(value = "/updateDriverAssigned")

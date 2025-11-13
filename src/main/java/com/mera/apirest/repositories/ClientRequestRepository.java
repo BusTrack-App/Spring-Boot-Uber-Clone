@@ -400,6 +400,107 @@ public class ClientRequestRepository {
         return data;
     }
 
+    public List<ClientRequestResponse> getByDriverAssigned(Long idDriverAssigned) {
+        String sql = """
+                SELECT
+                	CR.id,
+                    CR.id_client,
+                    CR.id_driver_assigned,
+                    CR.fare_offered,
+                    CR.fare_assigned,
+                    CR.pickup_description,
+                    CR.destination_description,
+                    CR.client_rating,
+                    CR.driver_rating,
+                    CR.status,
+                    CR.updated_at,
+                    JSON_OBJECT(
+                		"x", ST_X(pickup_position),
+                        "y", ST_Y(pickup_position)
+                    ) AS pickup_position,
+                    JSON_OBJECT(
+                		"x", ST_X(destination_position),
+                        "y", ST_Y(destination_position)
+                    ) AS destination_position,
+                    JSON_OBJECT(
+                		"name", U.name,
+                        "lastname", U.lastname,
+                        "phone", U.phone,
+                        "image", U.image
+                    ) AS client,
+                    JSON_OBJECT(
+                		"name", D.name,
+                        "lastname", D.lastname,
+                        "phone", D.phone,
+                        "image", D.image
+                    ) AS driver,
+                    JSON_OBJECT(
+                		"brand", DCI.brand,
+                        "color", DCI.color,
+                        "plate", DCI.plate
+                    ) AS car
+                FROM
+                	client_requests AS CR
+                INNER JOIN
+                	users AS U
+                ON
+                	U.id = CR.id_client
+                LEFT JOIN
+                    users AS D
+                ON
+                    D.id = CR.id_driver_assigned
+                LEFT JOIN
+                    driver_car_info AS DCI
+                ON
+                    DCI.id_driver = CR.id_driver_assigned
+                WHERE
+                	CR.id_driver_assigned = ? AND CR.status = 'FINISHED'
+        """;
+
+        List<ClientRequestResponse> data = jdbcTemplate.query(sql, new Object[]{idDriverAssigned}, (result, rowNumber) -> {
+            ObjectMapper mapper = new ObjectMapper();
+
+            try {
+                ClientRequestResponse.ClientInfoDTO client = mapper.readValue(result.getString("client"), ClientRequestResponse.ClientInfoDTO.class);
+                client.setImage(APIConfig.BASE_URL + client.getImage());
+
+                ClientRequestResponse.DriverInfoDTO driver = mapper.readValue(result.getString("driver"), ClientRequestResponse.DriverInfoDTO.class);
+                driver.setImage(APIConfig.BASE_URL + driver.getImage());
+
+                ClientRequestResponse.CarInfoDTO car = mapper.readValue(result.getString("car"), ClientRequestResponse.CarInfoDTO.class);
+
+                ClientRequestResponse.CoordinatesDTO pickupPosition = mapper.readValue(result.getString("pickup_position"), ClientRequestResponse.CoordinatesDTO.class);
+                ClientRequestResponse.CoordinatesDTO destinationPosition = mapper.readValue(result.getString("destination_position"), ClientRequestResponse.CoordinatesDTO.class);
+
+                ClientRequestResponse response = new ClientRequestResponse();
+                response.setId(result.getLong("id"));
+                response.setIdClient(result.getLong("id_client"));
+                response.setIdDriverAssigned(result.getLong("id_driver_assigned"));
+                response.setFareOffered(result.getDouble("fare_offered"));
+                response.setFareAssigned(result.getDouble("fare_assigned"));
+                response.setPickupDescription(result.getString("pickup_description"));
+                response.setDestinationDescription(result.getString("destination_description"));
+                response.setStatus(result.getString("status"));
+
+                response.setUpdatedAt(result.getTimestamp("updated_at").toLocalDateTime());
+                response.setClient(client);
+                response.setDriver(driver);
+                response.setCar(car);
+                response.setPickupPosition(pickupPosition);
+                response.setDestinationPosition(destinationPosition);
+
+                response.setClientRating(result.getDouble("client_rating"));
+                response.setDriverRating(result.getDouble("driver_rating"));
+                return response;
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Error al deseralizar JSON NearbyClientRequestResponse", e);
+            }
+
+
+        });
+
+        return data;
+    }
 
     public boolean updateDriverAssigned(AssignDriverRequestDTO request) {
         String sql = """
