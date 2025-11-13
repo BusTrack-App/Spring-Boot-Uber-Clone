@@ -109,6 +109,9 @@ public class ClientRequestService {
         return clientRequestRepository.getByClientRequest(id);
     }
 
+    public List<ClientRequestResponse> getByClientAssigned(Long idClient) {
+        return clientRequestRepository.getByClientAssigned(idClient);
+    }
 
     public boolean updateDriverAssigned(AssignDriverRequestDTO request) {
         return clientRequestRepository.updateDriverAssigned(request);
