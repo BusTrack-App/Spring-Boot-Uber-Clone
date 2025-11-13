@@ -118,5 +118,13 @@ public class ClientRequestService {
         return clientRequestRepository.updateStatus(request);
     }
 
+    public boolean updateClientRating(UpdateClientRatingDTO request) {
+        return clientRequestRepository.updateClientRating(request);
+    }
+
+    public boolean updateDriverRating(UpdateDriverRatingDTO request) {
+        return clientRequestRepository.updateDriverRating(request);
+    }
+
 
 }

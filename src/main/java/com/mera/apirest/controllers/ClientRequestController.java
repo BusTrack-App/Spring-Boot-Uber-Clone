@@ -108,4 +108,31 @@ public class ClientRequestController {
     }
 
 
+    @PutMapping(value = "/update_client_rating")
+    public ResponseEntity<?> updateClientRating(@RequestBody UpdateClientRatingDTO request) {
+        try {
+            boolean response = clientRequestService.updateClientRating(request);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "message", e.getMessage(),
+                    "statusCode", HttpStatus.BAD_REQUEST.value()
+            ));
+        }
+    }
+
+    @PutMapping(value = "/update_driver_rating")
+    public ResponseEntity<?> updateDriverRating(@RequestBody UpdateDriverRatingDTO request) {
+        try {
+            boolean response = clientRequestService.updateDriverRating(request);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "message", e.getMessage(),
+                    "statusCode", HttpStatus.BAD_REQUEST.value()
+            ));
+        }
+    }
+
+
 }

@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mera.apirest.config.APIConfig;
-import com.mera.apirest.dto.client_request.AssignDriverRequestDTO;
-import com.mera.apirest.dto.client_request.ClientRequestResponse;
-import com.mera.apirest.dto.client_request.NearbyClientRequestResponse;
-import com.mera.apirest.dto.client_request.UpdateStatusClientRequestDTO;
+import com.mera.apirest.dto.client_request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -332,6 +329,36 @@ public class ClientRequestRepository {
         return rowsAffected > 0;
     }
 
+
+    public boolean updateClientRating(UpdateClientRatingDTO request) {
+        String sql = """
+            UPDATE 
+                client_requests
+            SET 
+                client_rating = ?,
+                updated_at = NOW()
+            WHERE
+                id = ?
+        """;
+
+        int rowsAffected = jdbcTemplate.update(sql, request.getClientRating(), request.getId());
+        return rowsAffected > 0;
+    }
+
+    public boolean updateDriverRating(UpdateDriverRatingDTO request) {
+        String sql = """
+            UPDATE 
+                client_requests
+            SET 
+                driver_rating = ?,
+                updated_at = NOW()
+            WHERE
+                id = ?
+        """;
+
+        int rowsAffected = jdbcTemplate.update(sql, request.getDriverRating(), request.getId());
+        return rowsAffected > 0;
+    }
 
 
 }
