@@ -312,6 +312,7 @@ public class ClientRequestRepository {
                     CR.driver_rating,
                     CR.status,
                     CR.updated_at,
+                    CR.created_at,
                     JSON_OBJECT(
                 		"x", ST_X(pickup_position),
                         "y", ST_Y(pickup_position)
@@ -381,6 +382,7 @@ public class ClientRequestRepository {
                 response.setStatus(result.getString("status"));
 
                 response.setUpdatedAt(result.getTimestamp("updated_at").toLocalDateTime());
+                response.setCreatedAt(result.getTimestamp("created_at").toLocalDateTime());
                 response.setClient(client);
                 response.setDriver(driver);
                 response.setCar(car);
@@ -414,6 +416,7 @@ public class ClientRequestRepository {
                     CR.driver_rating,
                     CR.status,
                     CR.updated_at,
+                    CR.created_at,
                     JSON_OBJECT(
                 		"x", ST_X(pickup_position),
                         "y", ST_Y(pickup_position)
@@ -483,6 +486,7 @@ public class ClientRequestRepository {
                 response.setStatus(result.getString("status"));
 
                 response.setUpdatedAt(result.getTimestamp("updated_at").toLocalDateTime());
+                response.setCreatedAt(result.getTimestamp("created_at").toLocalDateTime());
                 response.setClient(client);
                 response.setDriver(driver);
                 response.setCar(car);

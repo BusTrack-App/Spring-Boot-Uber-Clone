@@ -43,6 +43,9 @@ public class ClientRequestResponse {
     @JsonProperty("updated_at")
     private LocalDateTime updatedAt;
 
+    @JsonProperty("created_at")
+    private LocalDateTime createdAt;
+
     private ClientInfoDTO client;
     private DriverInfoDTO driver;
     private CarInfoDTO car;
