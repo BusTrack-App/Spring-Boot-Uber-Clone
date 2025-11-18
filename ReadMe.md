@@ -45,3 +45,8 @@ Asegurarse de que la Api de google tenga habilitado Distance Matrix API
 Al hacer peticiones al
 http://192.168.1.55:3000/client-requests/4.713484/-74.084330
 Se mouestran las ofertas de rutas actuales
+
+
+
+
+Tener en cuenta la ipv4, al hacer peticiones desde insomnia o postman se puede usar localhost, pero al usarlo desde la app u otro cliente se debe tener en cuenta la ipv4
